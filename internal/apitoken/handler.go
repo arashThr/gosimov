@@ -30,18 +30,14 @@ var Module = fx.Module("apitoken",
 )
 
 // NewMiddleware authenticates requests that carry a bearer token, on any
-// route. Requests without an Authorization header pass through untouched.
+// route. Other requests (no header, or another scheme such as Basic) pass
+// through untouched.
 func NewMiddleware(repo *Repository) server.Middleware {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			header := r.Header.Get("Authorization")
-			if header == "" {
+			scheme, raw, _ := strings.Cut(r.Header.Get("Authorization"), " ")
+			if !strings.EqualFold(scheme, "Bearer") {
 				next.ServeHTTP(w, r)
-				return
-			}
-			raw, ok := strings.CutPrefix(header, "Bearer ")
-			if !ok {
-				web.Error(w, r, errs.Public(errs.ErrUnauthorized, "Expected a bearer token"))
 				return
 			}
 			u, err := repo.User(r.Context(), strings.TrimSpace(raw))

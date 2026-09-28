@@ -1,0 +1,44 @@
+package billing
+
+templ Section(sub *Subscription) {
+	<section class="card">
+		<div class="card-header">
+			<h2>Plan</h2>
+			if sub != nil && sub.Active() {
+				<span class="badge badge-accent">Pro</span>
+			} else {
+				<span class="badge">Free</span>
+			}
+		</div>
+		if sub != nil && sub.Active() {
+			<dl class="dl">
+				<dt>Status</dt>
+				<dd>{ sub.Status }</dd>
+				if sub.CurrentPeriodEnd != nil {
+					if sub.CancelAtPeriodEnd {
+						<dt>Ends on</dt>
+					} else {
+						<dt>Renews on</dt>
+					}
+					<dd>{ sub.CurrentPeriodEnd.Format("January 2, 2006") }</dd>
+				}
+			</dl>
+			<hr/>
+			<form method="post" action="/billing/portal">
+				<button type="submit" class="btn">Manage billing</button>
+			</form>
+		} else {
+			<p class="muted">Upgrade to Pro to unlock everything.</p>
+			<div class="row">
+				<form method="post" action="/billing/checkout">
+					<button type="submit" class="btn btn-primary">Upgrade to Pro</button>
+				</form>
+				if sub != nil {
+					<form method="post" action="/billing/portal">
+						<button type="submit" class="btn btn-ghost">Billing history</button>
+					</form>
+				}
+			</div>
+		}
+	</section>
+}

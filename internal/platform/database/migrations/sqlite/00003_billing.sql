@@ -5,7 +5,8 @@ CREATE TABLE stripe_customers (
     created_at  DATETIME NOT NULL
 );
 
--- Latest known state of each Stripe subscription, kept in sync by webhooks.
+-- Latest known state of each Stripe subscription, synced from the Stripe API
+-- whenever a webhook reports a change.
 CREATE TABLE subscriptions (
     id                     INTEGER PRIMARY KEY AUTOINCREMENT,
     user_id                INTEGER NOT NULL REFERENCES users (id) ON DELETE CASCADE,
@@ -19,14 +20,6 @@ CREATE TABLE subscriptions (
 );
 CREATE INDEX idx_subscriptions_user_id ON subscriptions (user_id);
 
--- Processed webhook events, for idempotency.
-CREATE TABLE stripe_events (
-    id           TEXT PRIMARY KEY,
-    type         TEXT NOT NULL,
-    processed_at DATETIME NOT NULL
-);
-
 -- +goose Down
-DROP TABLE stripe_events;
 DROP TABLE subscriptions;
 DROP TABLE stripe_customers;

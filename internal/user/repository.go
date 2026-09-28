@@ -103,6 +103,25 @@ func (r *Repository) Count(ctx context.Context) (int, error) {
 	return n, nil
 }
 
+// ListRecent returns the most recently created users.
+func (r *Repository) ListRecent(ctx context.Context, limit int) ([]User, error) {
+	rows, err := r.db.QueryContext(ctx, `SELECT `+userColumns+` FROM users ORDER BY created_at DESC LIMIT $1`, limit)
+	if err != nil {
+		return nil, fmt.Errorf("list users: %w", err)
+	}
+	defer rows.Close()
+
+	var users []User
+	for rows.Next() {
+		u, err := scanUser(rows)
+		if err != nil {
+			return nil, fmt.Errorf("scan user: %w", err)
+		}
+		users = append(users, *u)
+	}
+	return users, rows.Err()
+}
+
 // GetByIdentity finds the user linked to a provider account.
 func (r *Repository) GetByIdentity(ctx context.Context, provider, providerUserID string) (*User, error) {
 	row := r.db.QueryRowContext(ctx, `

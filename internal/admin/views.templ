@@ -1,0 +1,43 @@
+package admin
+
+import (
+	"strconv"
+
+	"github.com/arashthr/skeleton/internal/ui"
+	"github.com/arashthr/skeleton/internal/user"
+)
+
+templ IndexPage(total int, recent []user.User) {
+	@ui.Layout("Admin") {
+		<div class="page-header">
+			<h1>Admin</h1>
+			<p>{ strconv.Itoa(total) } registered users</p>
+		</div>
+		<section class="card">
+			<div class="card-header">
+				<h2>Recent sign ups</h2>
+			</div>
+			<table class="table">
+				<thead>
+					<tr><th>ID</th><th>Email</th><th>Verified</th><th>Joined</th></tr>
+				</thead>
+				<tbody>
+					for _, u := range recent {
+						<tr>
+							<td class="muted">{ strconv.FormatInt(u.ID, 10) }</td>
+							<td>{ u.Email }</td>
+							<td>
+								if u.EmailVerified() {
+									<span class="badge badge-success">Yes</span>
+								} else {
+									<span class="badge">No</span>
+								}
+							</td>
+							<td class="muted">{ u.CreatedAt.Format("Jan 2, 2006 15:04") }</td>
+						</tr>
+					}
+				</tbody>
+			</table>
+		</section>
+	}
+}
