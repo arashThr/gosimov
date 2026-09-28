@@ -3,6 +3,8 @@
 package app
 
 import (
+	"github.com/arashthr/skeleton/internal/account"
+	"github.com/arashthr/skeleton/internal/apitoken"
 	"github.com/arashthr/skeleton/internal/auth"
 	"github.com/arashthr/skeleton/internal/home"
 	"github.com/arashthr/skeleton/internal/platform/config"
@@ -30,6 +32,8 @@ func Options() fx.Option {
 		// Features
 		user.Module,
 		auth.Module,
+		account.Module,
+		apitoken.Module,
 		home.Module,
 	)
 }

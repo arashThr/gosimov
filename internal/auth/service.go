@@ -234,6 +234,30 @@ func (s *Service) ResetPassword(ctx context.Context, token, password string) (*u
 	return u, nil
 }
 
+// ChangePassword sets a new password for a signed-in user and ends all their
+// sessions. Users without a password (magic link or OAuth signups) can set
+// one without providing the current password.
+func (s *Service) ChangePassword(ctx context.Context, u *user.User, current, newPassword string) error {
+	if u.HasPassword() && !CheckPassword(*u.PasswordHash, current) {
+		return errs.Public(errs.ErrInvalid, "Current password is incorrect")
+	}
+	if err := ValidatePassword(newPassword); err != nil {
+		return err
+	}
+	hash, err := HashPassword(newPassword)
+	if err != nil {
+		return err
+	}
+	if err := s.users.UpdatePassword(ctx, u.ID, hash); err != nil {
+		return err
+	}
+	if err := s.sessions.DeleteAllForUser(ctx, u.ID); err != nil {
+		return err
+	}
+	s.log.Info("password changed", zap.Int64("user_id", u.ID))
+	return nil
+}
+
 // ExternalUser is what an OAuth provider tells us about the signed-in person.
 type ExternalUser struct {
 	Provider      string

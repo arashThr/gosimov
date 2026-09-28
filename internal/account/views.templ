@@ -1,0 +1,109 @@
+package account
+
+import (
+	"github.com/arashthr/skeleton/internal/auth"
+	"github.com/arashthr/skeleton/internal/ui"
+	"github.com/arashthr/skeleton/internal/user"
+	"strconv"
+)
+
+templ AccountPage(sections []templ.Component) {
+	@ui.Layout("Account") {
+		<div class="page-header">
+			<h1>Account</h1>
+			<p>Manage your profile, sign-in methods and data.</p>
+		</div>
+		for _, s := range sections {
+			@s
+		}
+	}
+}
+
+templ ProfileSection(u *user.User) {
+	<section class="card">
+		<div class="card-header">
+			<h2>Profile</h2>
+		</div>
+		<dl class="dl">
+			<dt>Email</dt>
+			<dd>
+				{ u.Email }
+				if u.EmailVerified() {
+					<span class="badge badge-success">Verified</span>
+				} else {
+					<span class="badge">Unverified</span>
+				}
+			</dd>
+			<dt>Member since</dt>
+			<dd>{ u.CreatedAt.Format("January 2, 2006") }</dd>
+		</dl>
+	</section>
+}
+
+templ SignInSection(u *user.User, providers []auth.Provider, connected map[string]user.Identity) {
+	<section class="card">
+		<div class="card-header">
+			<h2>Sign-in methods</h2>
+		</div>
+		<p class="muted small">You can always sign in with a link sent to <strong>{ u.Email }</strong>.</p>
+		if len(providers) > 0 {
+			<table class="table">
+				<tbody>
+					for _, p := range providers {
+						<tr>
+							<td><strong>{ p.Label() }</strong></td>
+							if id, ok := connected[p.Name()]; ok {
+								<td class="muted">Connected as { id.Email }</td>
+								<td>
+									<form method="post" action={ templ.SafeURL("/account/identities/" + p.Name() + "/disconnect") }>
+										<button type="submit" class="btn btn-ghost">Disconnect</button>
+									</form>
+								</td>
+							} else {
+								<td class="muted">Not connected</td>
+								<td><a class="btn" href={ templ.SafeURL("/oauth/" + p.Name()) }>Connect</a></td>
+							}
+						</tr>
+					}
+				</tbody>
+			</table>
+			<hr/>
+		}
+		<h3>
+			if u.HasPassword() {
+				Change password
+			} else {
+				Set a password
+			}
+		</h3>
+		<form method="post" action="/account/password">
+			if u.HasPassword() {
+				<label class="field">
+					<span>Current password</span>
+					<input type="password" name="current_password" autocomplete="current-password" required/>
+				</label>
+			}
+			<label class="field">
+				<span>New password</span>
+				<input type="password" name="new_password" autocomplete="new-password" minlength={ strconv.Itoa(auth.MinPasswordLength) } required/>
+			</label>
+			<button type="submit" class="btn">Save password</button>
+		</form>
+	</section>
+}
+
+templ DangerSection(u *user.User) {
+	<section class="card danger">
+		<div class="card-header">
+			<h2>Delete account</h2>
+		</div>
+		<p class="muted">This permanently deletes your account and all of its data. This cannot be undone.</p>
+		<form method="post" action="/account/delete">
+			<label class="field">
+				<span>Type <code>{ u.Email }</code> to confirm</span>
+				<input type="text" name="confirm_email" autocomplete="off" required/>
+			</label>
+			<button type="submit" class="btn btn-danger">Delete my account</button>
+		</form>
+	</section>
+}

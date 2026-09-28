@@ -1,0 +1,68 @@
+package apitoken
+
+import (
+	"github.com/arashthr/skeleton/internal/platform/flash"
+	"github.com/arashthr/skeleton/internal/ui"
+	"strconv"
+)
+
+// Section lists API tokens. created holds a freshly generated token, shown once.
+templ Section(tokens []Token, created, errMsg string) {
+	<section class="card" id="api-tokens">
+		<div class="card-header">
+			<h2>API tokens</h2>
+			<span class="muted small">{ strconv.Itoa(len(tokens)) } / { strconv.Itoa(MaxPerUser) }</span>
+		</div>
+		<p class="muted small">
+			Use a token to call the API: <code>curl -H "Authorization: Bearer &lt;token&gt;" /api/v1/me</code>
+		</p>
+		if errMsg != "" {
+			@ui.Alert(flash.Error, errMsg)
+		}
+		if created != "" {
+			<div class="alert alert-success">
+				<p>Copy your new token now. You won't be able to see it again.</p>
+				<div class="token-reveal">
+					<input type="text" readonly value={ created } onclick="this.select()"/>
+					<button type="button" class="btn" onclick="navigator.clipboard.writeText(this.previousElementSibling.value); this.textContent='Copied'">Copy</button>
+				</div>
+			</div>
+		}
+		if len(tokens) > 0 {
+			<table class="table">
+				<thead>
+					<tr><th>Name</th><th>Created</th><th>Last used</th><th></th></tr>
+				</thead>
+				<tbody>
+					for _, t := range tokens {
+						<tr>
+							<td>{ t.Name }</td>
+							<td class="muted">{ t.CreatedAt.Format("Jan 2, 2006") }</td>
+							<td class="muted">
+								if t.LastUsedAt != nil {
+									{ t.LastUsedAt.Format("Jan 2, 2006") }
+								} else {
+									Never
+								}
+							</td>
+							<td>
+								<button
+									class="btn btn-ghost"
+									hx-delete={ "/account/tokens/" + strconv.FormatInt(t.ID, 10) }
+									hx-target="#api-tokens"
+									hx-swap="outerHTML"
+									hx-confirm="Revoke this token? Apps using it will stop working."
+								>Revoke</button>
+							</td>
+						</tr>
+					}
+				</tbody>
+			</table>
+			<hr/>
+		}
+		<form class="row" hx-post="/account/tokens" hx-target="#api-tokens" hx-swap="outerHTML">
+			<input type="text" name="name" placeholder="Token name, e.g. CLI" maxlength="60" style="flex:1; min-width: 200px"/>
+			<button type="submit" class="btn btn-primary">Create token</button>
+		</form>
+	</section>
+}
