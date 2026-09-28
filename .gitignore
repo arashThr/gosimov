@@ -1,0 +1,19 @@
+# Build output
+/bin/
+/tmp/
+
+# Generated templ code (run `make generate`)
+*_templ.go
+
+# Local data (SQLite database, uploads, ...)
+/data/
+
+# Secrets
+.env
+.env.*
+!.env.example
+
+# Editors / OS
+.idea/
+.vscode/
+.DS_Store

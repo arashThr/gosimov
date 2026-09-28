@@ -1,0 +1,97 @@
+package ui
+
+import (
+	"time"
+
+	"github.com/arashthr/skeleton/internal/platform/flash"
+	"github.com/arashthr/skeleton/internal/user"
+)
+
+// Layout is the HTML shell shared by every page.
+templ Layout(title string) {
+	<!DOCTYPE html>
+	<html lang="en">
+		<head>
+			<meta charset="utf-8"/>
+			<meta name="viewport" content="width=device-width, initial-scale=1"/>
+			<title>
+				if title != "" {
+					{ title } · { Site.Name }
+				} else {
+					{ Site.Name }
+				}
+			</title>
+			<link rel="icon" href={ Asset("favicon.svg") } type="image/svg+xml"/>
+			<link rel="stylesheet" href={ Asset("css/app.css") }/>
+			<script src={ Asset("js/htmx.min.js") } defer></script>
+		</head>
+		<body>
+			@header()
+			<main>
+				<div class="container">
+					@Flash()
+					{ children... }
+				</div>
+			</main>
+			@footer()
+		</body>
+	</html>
+}
+
+templ header() {
+	{{ u := user.FromContext(ctx) }}
+	<header class="site-header">
+		<div class="container">
+			<a href="/" class="brand"><span class="brand-mark"></span>{ Site.Name }</a>
+			<nav class="nav">
+				if u != nil {
+					<a href="/dashboard">Dashboard</a>
+					<a href="/account">Account</a>
+					<form method="post" action="/signout">
+						<button type="submit" class="btn btn-ghost">Sign out</button>
+					</form>
+				} else {
+					<a href="/signin">Sign in</a>
+					<a href="/signup" class="btn btn-primary">Get started</a>
+				}
+			</nav>
+		</div>
+	</header>
+}
+
+templ footer() {
+	<footer class="site-footer">
+		<div class="container row">
+			<span>© { time.Now().Format("2006") } { Site.Name }</span>
+		</div>
+	</footer>
+}
+
+// Flash renders the one-shot message stored by flash.Set, if any.
+templ Flash() {
+	if msg := flash.FromContext(ctx); msg != nil {
+		@Alert(msg.Kind, msg.Text)
+	}
+}
+
+templ Alert(kind flash.Kind, text string) {
+	<div class={ "alert", "alert-" + string(kind) } role="alert">{ text }</div>
+}
+
+// ErrorPage is rendered for failed requests.
+templ ErrorPage(status int, message string) {
+	@Layout(message) {
+		<div class="error-page">
+			<div class="code gradient-text">{ status }</div>
+			<h1>{ message }</h1>
+			<p class="muted">
+				if status >= 500 {
+					Something went wrong on our side. Please try again in a moment.
+				} else {
+					The page you requested could not be served.
+				}
+			</p>
+			<a href="/" class="btn">Back to home</a>
+		</div>
+	}
+}

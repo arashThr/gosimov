@@ -1,0 +1,37 @@
+package home
+
+import "github.com/arashthr/skeleton/internal/ui"
+
+templ LandingPage() {
+	@ui.Layout("") {
+		<section class="hero">
+			<h1>Build your next idea <span class="gradient-text">faster</span></h1>
+			<p class="lead">
+				A lean Go starter with accounts, sessions, OAuth, billing and deployment already wired up.
+				Focus on the part that makes your product unique.
+			</p>
+			<div class="row">
+				<a href="/signup" class="btn btn-primary btn-lg">Create an account</a>
+				<a href="/signin" class="btn btn-lg">Sign in</a>
+			</div>
+		</section>
+		<section class="features">
+			<div class="card feature">
+				<h3>Accounts built in</h3>
+				<p>Password, magic link, Google and GitHub sign in, with email verification and password reset.</p>
+			</div>
+			<div class="card feature">
+				<h3>Server-rendered</h3>
+				<p>Type-safe templ components, a sprinkle of htmx and plain CSS. No build pipeline for the frontend.</p>
+			</div>
+			<div class="card feature">
+				<h3>Postgres or SQLite</h3>
+				<p>Portable SQL and embedded migrations. Switch engines with a single environment variable.</p>
+			</div>
+			<div class="card feature">
+				<h3>Ready to ship</h3>
+				<p>Docker image, Compose stack and Caddy with automatic HTTPS. Push and deploy.</p>
+			</div>
+		</section>
+	}
+}
