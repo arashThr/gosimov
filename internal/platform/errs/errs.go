@@ -10,6 +10,7 @@ var (
 	ErrConflict     = errors.New("conflict")
 	ErrUnauthorized = errors.New("unauthorized")
 	ErrForbidden    = errors.New("forbidden")
+	ErrRateLimited  = errors.New("too many requests")
 )
 
 // Public wraps err with a message that is safe to show to end users.

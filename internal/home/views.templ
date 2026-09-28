@@ -1,6 +1,9 @@
 package home
 
-import "github.com/arashthr/skeleton/internal/ui"
+import (
+	"github.com/arashthr/skeleton/internal/ui"
+	"github.com/arashthr/skeleton/internal/user"
+)
 
 templ LandingPage() {
 	@ui.Layout("") {
@@ -33,5 +36,54 @@ templ LandingPage() {
 				<p>Docker image, Compose stack and Caddy with automatic HTTPS. Push and deploy.</p>
 			</div>
 		</section>
+	}
+}
+
+templ DashboardPage(u *user.User) {
+	@ui.Layout("Dashboard") {
+		<div class="page-header">
+			<h1>Dashboard</h1>
+			<p>Signed in as { u.Email }</p>
+		</div>
+		if !u.EmailVerified() {
+			<div class="alert alert-info">
+				<div class="row">
+					<span>Please verify your email address. We sent you a link when you signed up.</span>
+					<button
+						class="btn"
+						hx-post="/verify-email/resend"
+						hx-target="this"
+						hx-swap="outerHTML"
+					>Resend email</button>
+				</div>
+			</div>
+		}
+		<div class="grid-2">
+			<div class="card">
+				<div class="card-header">
+					<h2>Your account</h2>
+					if u.EmailVerified() {
+						<span class="badge badge-success">Verified</span>
+					} else {
+						<span class="badge">Unverified</span>
+					}
+				</div>
+				<dl class="dl">
+					<dt>Email</dt>
+					<dd>{ u.Email }</dd>
+					<dt>Member since</dt>
+					<dd>{ u.CreatedAt.Format("January 2, 2006") }</dd>
+				</dl>
+				<hr/>
+				<a href="/account" class="btn">Manage account</a>
+			</div>
+			<div class="card">
+				<h2>Start building</h2>
+				<p class="muted">
+					This page lives in <code>internal/home</code>. Add a new feature package next to it,
+					register its module in <code>internal/app/app.go</code>, and you are off.
+				</p>
+			</div>
+		</div>
 	}
 }

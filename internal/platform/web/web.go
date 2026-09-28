@@ -67,6 +67,8 @@ func StatusFor(err error) int {
 		return http.StatusUnauthorized
 	case errors.Is(err, errs.ErrForbidden):
 		return http.StatusForbidden
+	case errors.Is(err, errs.ErrRateLimited):
+		return http.StatusTooManyRequests
 	default:
 		return http.StatusInternalServerError
 	}

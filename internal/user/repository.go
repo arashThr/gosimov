@@ -132,6 +132,40 @@ func (r *Repository) LinkIdentity(ctx context.Context, userID int64, provider, p
 	return nil
 }
 
+// CreateWithIdentity creates a verified, password-less user linked to a
+// provider account, atomically.
+func (r *Repository) CreateWithIdentity(ctx context.Context, email, provider, providerUserID string) (*User, error) {
+	var u *User
+	err := r.db.InTx(ctx, func(tx *sql.Tx) error {
+		now := time.Now().UTC()
+		var err error
+		u, err = scanUser(tx.QueryRowContext(ctx, `
+			INSERT INTO users (email, email_verified_at, created_at, updated_at)
+			VALUES ($1, $2, $2, $2)
+			RETURNING `+userColumns, NormalizeEmail(email), now))
+		if database.IsUniqueViolation(err) {
+			return ErrEmailTaken
+		}
+		if err != nil {
+			return fmt.Errorf("create user: %w", err)
+		}
+		_, err = tx.ExecContext(ctx, `
+			INSERT INTO user_identities (user_id, provider, provider_user_id, email, created_at)
+			VALUES ($1, $2, $3, $4, $5)`, u.ID, provider, providerUserID, NormalizeEmail(email), now)
+		if err != nil {
+			return fmt.Errorf("link %s identity: %w", provider, err)
+		}
+		return nil
+	})
+	return u, err
+}
+
+// UnlinkIdentity removes a provider account from a user.
+func (r *Repository) UnlinkIdentity(ctx context.Context, userID int64, provider string) error {
+	return r.exec(ctx, "unlink identity",
+		`DELETE FROM user_identities WHERE user_id = $1 AND provider = $2`, userID, provider)
+}
+
 func (r *Repository) ListIdentities(ctx context.Context, userID int64) ([]Identity, error) {
 	rows, err := r.db.QueryContext(ctx, `
 		SELECT id, user_id, provider, provider_user_id, email, created_at
