@@ -1,0 +1,25 @@
+# Local services for development: `make services`
+#   Postgres  localhost:5432  (DB_DRIVER=postgres DATABASE_URL=postgres://postgres:postgres@localhost:5432/app?sslmode=disable)
+#   Mailpit   SMTP localhost:1025, web UI http://localhost:8025  (SMTP_HOST=localhost SMTP_PORT=1025)
+name: skeleton-dev
+
+services:
+  db:
+    image: postgres:18-alpine
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: app
+    ports:
+      - "127.0.0.1:5432:5432"
+    volumes:
+      - db-data:/var/lib/postgresql
+
+  mailpit:
+    image: axllent/mailpit
+    ports:
+      - "127.0.0.1:1025:1025"
+      - "127.0.0.1:8025:8025"
+
+volumes:
+  db-data:

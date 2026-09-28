@@ -1,0 +1,23 @@
+# Live reload for development: `make dev` (or `go tool air`).
+# Rebuilds and restarts the server when Go, templ, CSS, JS or SQL files change.
+root = "."
+tmp_dir = "tmp"
+
+[build]
+pre_cmd = ["go tool templ generate"]
+cmd = "go build -o ./tmp/server ./cmd/server"
+entrypoint = ["./tmp/server"]
+include_ext = ["go", "templ", "css", "js", "svg", "sql"]
+exclude_dir = ["tmp", "bin", "data", "deploy"]
+# Generated files would trigger a second rebuild.
+exclude_regex = ["_templ\\.go$", "_test\\.go$"]
+delay = 200
+stop_on_error = true
+send_interrupt = true
+kill_delay = "3s"
+
+[log]
+main_only = true
+
+[misc]
+clean_on_exit = true

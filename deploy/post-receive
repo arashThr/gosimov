@@ -1,0 +1,32 @@
+#!/bin/bash
+# Git push-to-deploy hook.
+#
+# One-time setup on the server:
+#   git init --bare ~/repos/app.git
+#   cp deploy/post-receive ~/repos/app.git/hooks/post-receive && chmod +x ~/repos/app.git/hooks/post-receive
+#   mkdir -p ~/repos/app && cp .env.example ~/repos/app/.env   # then edit it
+# On your machine:
+#   git remote add production user@server:repos/app.git
+#   git push production main
+set -euo pipefail
+
+GIT_DIR="${GIT_DIR:-$HOME/repos/app.git}"
+WORK_TREE="${WORK_TREE:-$HOME/repos/app}"
+BRANCH=main
+
+while read -r _oldrev _newrev ref; do
+    if [[ "$ref" != "refs/heads/$BRANCH" ]]; then
+        echo "Received $ref, only $BRANCH is deployed."
+        continue
+    fi
+
+    echo "Deploying $BRANCH..."
+    mkdir -p "$WORK_TREE"
+    git --work-tree="$WORK_TREE" --git-dir="$GIT_DIR" checkout -f "$BRANCH"
+
+    cd "$WORK_TREE"
+    docker compose up -d --build --remove-orphans
+    docker image prune -f >/dev/null
+    docker compose ps
+    echo "Deployed."
+done

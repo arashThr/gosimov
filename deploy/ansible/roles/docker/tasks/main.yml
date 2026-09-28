@@ -1,0 +1,25 @@
+---
+- name: Check if Docker is installed
+  ansible.builtin.command: docker --version
+  register: docker_check
+  failed_when: false
+  changed_when: false
+
+- name: Install Docker with the official convenience script
+  when: docker_check.rc != 0
+  block:
+    - name: Download get-docker.sh
+      ansible.builtin.get_url:
+        url: https://get.docker.com
+        dest: /tmp/get-docker.sh
+        mode: "0755"
+
+    - name: Run get-docker.sh
+      ansible.builtin.command: sh /tmp/get-docker.sh
+      changed_when: true
+
+- name: Add the user to the docker group
+  ansible.builtin.user:
+    name: "{{ ansible_user | default(lookup('env', 'USER')) }}"
+    groups: docker
+    append: true

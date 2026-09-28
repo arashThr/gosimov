@@ -1,0 +1,11 @@
+.git
+.env
+.env.*
+!.env.example
+bin/
+tmp/
+data/
+deploy/
+*_templ.go
+Dockerfile
+compose*.yml
