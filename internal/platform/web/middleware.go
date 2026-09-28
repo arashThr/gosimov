@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"runtime/debug"
+	"strings"
 	"time"
 
 	"github.com/arashthr/skeleton/internal/platform/logger"
@@ -29,10 +30,13 @@ func RequestLogger(base *zap.Logger) func(http.Handler) http.Handler {
 					zap.Duration("duration", time.Since(start)),
 					zap.String("ip", r.RemoteAddr),
 				}
-				if ww.Status() >= 500 {
+				switch {
+				case ww.Status() >= 500:
 					log.Warn("http request", fields...)
-				} else {
+				case r.URL.Path == "/healthz" || strings.HasPrefix(r.URL.Path, "/static/"):
 					log.Debug("http request", fields...)
+				default:
+					log.Info("http request", fields...)
 				}
 			}()
 

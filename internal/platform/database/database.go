@@ -111,6 +111,8 @@ func sqliteDSN(path string) string {
 }
 
 // InTx runs fn inside a transaction, committing on success and rolling back on error.
+// fn must only use tx: with SQLite the pool has a single connection, so
+// querying db inside fn would wait forever.
 func (db *DB) InTx(ctx context.Context, fn func(tx *sql.Tx) error) error {
 	tx, err := db.BeginTx(ctx, nil)
 	if err != nil {
