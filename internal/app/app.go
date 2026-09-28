@@ -21,8 +21,6 @@ import (
 
 func Options() fx.Option {
 	return fx.Options(
-		logger.FxLogger,
-
 		// Platform
 		config.Module,
 		logger.Module,

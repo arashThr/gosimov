@@ -5,9 +5,10 @@ package main
 
 import (
 	"github.com/arashthr/skeleton/internal/app"
+	"github.com/arashthr/skeleton/internal/platform/logger"
 	"go.uber.org/fx"
 )
 
 func main() {
-	fx.New(app.Options()).Run()
+	fx.New(app.Options(), logger.FxLogger).Run()
 }
