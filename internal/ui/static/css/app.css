@@ -5,22 +5,22 @@
   --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 
-  --bg: #f7f7f5;
+  --bg: #f7fbf3;
   --surface: #ffffff;
-  --surface-2: #f1f1ee;
-  --border: #e4e4df;
-  --text: #1c1c1a;
-  --muted: #6b6b66;
-  --accent: #4f46e5;
-  --accent-hover: #4338ca;
-  --accent-soft: #eef0ff;
+  --surface-2: #eaf6e0;
+  --border: #d7ead0;
+  --text: #1a2419;
+  --muted: #66765f;
+  --accent: #4d8f5b;
+  --accent-hover: #3c7448;
+  --accent-soft: #e4f5db;
   --accent-text: #ffffff;
-  --success: #15803d;
-  --success-soft: #ecfdf3;
+  --success: #2f9e44;
+  --success-soft: #eafbe7;
   --danger: #dc2626;
   --danger-soft: #fef2f2;
-  --info-soft: #eff6ff;
-  --info: #1d4ed8;
+  --info-soft: #fdf3d9;
+  --info: #a16207;
 
   --radius: 10px;
   --radius-sm: 6px;
@@ -32,22 +32,22 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --bg: #111110;
-    --surface: #1a1a19;
-    --surface-2: #222220;
-    --border: #2e2e2b;
-    --text: #ececea;
-    --muted: #9c9c96;
-    --accent: #818cf8;
-    --accent-hover: #a5b4fc;
-    --accent-soft: #1e1b3a;
-    --accent-text: #111110;
-    --success: #4ade80;
-    --success-soft: #0f2a1a;
+    --bg: #10160f;
+    --surface: #171e15;
+    --surface-2: #1e2819;
+    --border: #2b3826;
+    --text: #eaf3e2;
+    --muted: #9bb090;
+    --accent: #7fce93;
+    --accent-hover: #9bdaad;
+    --accent-soft: #1e3624;
+    --accent-text: #0d1a0f;
+    --success: #6bd97e;
+    --success-soft: #16301c;
     --danger: #f87171;
     --danger-soft: #2d1414;
-    --info-soft: #111c33;
-    --info: #93c5fd;
+    --info-soft: #332a10;
+    --info: #f0c65f;
     --shadow: 0 1px 2px rgb(0 0 0 / 0.3);
     color-scheme: dark;
   }
@@ -88,7 +88,7 @@ hr { border: 0; border-top: 1px solid var(--border); margin: 1.5rem 0; }
 .small { font-size: 0.875rem; }
 .center { text-align: center; }
 .stack > * + * { margin-top: 1rem; }
-.row { display: flex; gap: 0.75rem; align-items: center; flex-wrap: wrap; }
+.row { display: flex; justify-content: center; gap: 0.75rem; align-items: center; flex-wrap: wrap; }
 .spacer { flex: 1; }
 
 /* ==========================================================================
@@ -107,7 +107,7 @@ hr { border: 0; border-top: 1px solid var(--border); margin: 1.5rem 0; }
 .brand:hover { text-decoration: none; }
 .brand-mark {
   width: 26px; height: 26px; border-radius: 7px;
-  background: linear-gradient(135deg, var(--accent), #ec4899);
+  background: linear-gradient(135deg, var(--accent), #b8e08a);
 }
 .nav { display: flex; align-items: center; gap: 0.25rem; margin-left: auto; }
 .nav a:not(.btn) { color: var(--muted); padding: 0.4rem 0.7rem; border-radius: var(--radius-sm); font-weight: 500; }
@@ -155,11 +155,18 @@ main { flex: 1; padding: 2.5rem 0 4rem; }
   border-radius: var(--radius);
   box-shadow: var(--shadow);
   padding: 1.5rem;
+  margin-top: 1.25rem;
 }
-.card + .card { margin-top: 1.25rem; }
 .card-header { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; margin-bottom: 1rem; }
 .card-header h2 { margin: 0; }
 .card.danger { border-color: color-mix(in srgb, var(--danger) 35%, var(--border)); }
+
+.hero-svg {
+  width: min(920px, 92vw);
+  height: auto;
+  display: block;
+}
+.hero-svg .word { transform: skewX(-8deg); transform-box: fill-box; }
 
 .auth { max-width: 400px; margin: 2rem auto 0; }
 .auth h1 { font-size: 1.6rem; text-align: center; }
@@ -224,7 +231,7 @@ input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px 
 .hero h1 { font-size: clamp(2.2rem, 5vw, 3.4rem); letter-spacing: -0.035em; max-width: 14ch; margin: 0 auto 1rem; }
 .hero .lead { font-size: 1.15rem; color: var(--muted); max-width: 46ch; margin: 0 auto 2rem; }
 .hero .row { justify-content: center; }
-.gradient-text { background: linear-gradient(135deg, var(--accent), #ec4899); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.gradient-text { background: linear-gradient(135deg, var(--accent), #b8e08a); -webkit-background-clip: text; background-clip: text; color: transparent; }
 
 .features { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; margin-top: 2rem; }
 .feature h3 { margin-bottom: 0.35rem; }
